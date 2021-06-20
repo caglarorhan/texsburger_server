@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<%- include ../navmenu.ejs %>
+<h1>Sign in form</h1>
+<form action="/auth/signin"
+      method="post"
+      id="signInForm"
+      style="margin:auto;width:400px;display:flex;flex-direction: column;flex-wrap: wrap">
+    <div>First Name: <input type="email" name="email" id="email"></div>
+    <div>Password: <input type="password" name="password" id="password"></div>
+    <button type="submit">Sign In</button>
+</form>
+<script>
+    const signInForm = document.getElementById('signInForm');
+    signInForm.addEventListener('submit',async (event)=>{
+        event.preventDefault();
+        let formData = new FormData(signInForm).entries();
+        const signInRequest = await fetch(signInForm.action,{
+            method:'POST',
+            body: new URLSearchParams([...formData]),
+            header:{
+                'Accept':'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res=>{
+            return res.json();
+        })
+        .then(res=>{
+            console.log(res);
+        })
+        .catch(err=>{
+            console.log(`Error is:${err}`);
+        })
+    })
+</script>
+</body>
+</html>

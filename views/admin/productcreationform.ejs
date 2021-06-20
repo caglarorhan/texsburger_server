@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= pageTitle %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <style>
+#productCreationForm div{
+    padding:10px
+}
+    </style>
+</head>
+<body>
+<%- include ../navmenu.ejs %>
+<h1><%= pageTitle %></h1>
+<p>Welcome to <%= pageTitle %> Test page</p>
+<form action="productCreate"
+      id="productCreationForm"
+      name="productCreationForm"
+      method="post"
+      enctype="multipart/form-data"
+      style="margin:auto;width:400px;display:flex;flex-direction: column;flex-wrap: wrap"
+      >
+    <div>Product name: <input type="text" name="productName" ></div>
+    <div>Product price: <input type='number' name="productPrice" step='0.01' value='0.00' placeholder='0.00'></div>
+    <div>Product image: <input type="file" name="productImage"  id="productImage" ></div>
+    <div>Product description: <input type="textarea" name="productDescription" ></div>
+    <div><button type="submit" style="width:250px">CREATE Product</button></div>
+</form>
+<script>
+   document.querySelector('#productCreationForm').addEventListener('submit', async (event)=>{
+        event.preventDefault();
+        let productCreationForm = document.getElementById('productCreationForm');
+         let formData = new FormData(productCreationForm);
+        let createProductRequest = await fetch(productCreationForm.action,{
+            method:'POST',
+            body:formData
+        })
+        .then(result=>{
+            console.log(result)
+        })
+        .catch(err=>{
+            console.log(err)
+        })
+    })
+</script>
+</body>
+</html>

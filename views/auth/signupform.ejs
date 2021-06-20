@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title><%=pageTitle%>%></title>
+</head>
+<body>
+<%- include ../navmenu.ejs %>
+<h1>Sign up form</h1>
+<form action="signup"
+      id="signUpForm"
+      name="signUpForm"
+      method="post"
+      style="margin:auto;width:400px;display:flex;flex-direction: column;flex-wrap: wrap"
+>
+    <div>First Name: <input type="text" name="first_name" id="first_name"></div>
+    <div>Last Name: <input type="text" name="last_name" id="last_name"></div>
+    <div>Email: <input type="email" name="email" id="email"></div>
+    <div>Password: <input type="password" name="password" id="password"></div>
+    <div>Password (re): <input type="password" name="password_2" id="password_2"></div>
+    <div><button type="submit" style="width:250px">Sign Up</button></div>
+</form>
+<div id="result"></div>
+<script language="JavaScript">
+    let theForm = document.getElementById('signUpForm');
+    theForm.addEventListener('submit', (event)=>{
+        event.preventDefault();
+        let formData = new FormData(theForm).entries();
+        let createProductRequest = fetch('signup',{
+            method:'POST',
+            body:new URLSearchParams([...formData])
+        })
+            .then(result=>{
+                console.log(`Sonuc:${result}`);
+                return result.json();
+            })
+            .then(r=>{
+                if(r.userId){
+                    document.getElementById('result').innerHTML=r.message;
+                    theForm.reset();
+                    setTimeout(()=>{
+                        window.location.href = "/auth/signin"
+                    },5000)
+                }else{
+                    let errList = r.errors;
+                    document.getElementById('result').innerHTML='';
+                    errList.forEach(err=>{
+                        document.getElementById('result').innerHTML+=err.msg+'<br>';
+                    })
+
+                }
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+    })
+</script>
+</body>
+</html>
