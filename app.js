@@ -6,6 +6,7 @@ const logger = require('morgan');
 const mongoose = require('mongoose');
 const errorController = require('./controllers/error');
 const e_p = require('./config');
+const isAuth = require('./middlewares/is-auth');
 
 
 const indexRouter = require('./routes/index');
@@ -29,15 +30,20 @@ app.use(express.urlencoded({
 );
 app.use(cookieParser());
 
-e_p('fs', 'static_folders').split(',').forEach(folderName => {
+e_p().fs.static_folders.split(',').forEach(folderName => {
     app.use(express.static(path.join(__dirname, folderName)));
 })
-//app.use(express.static(path.join(__dirname, 'public')));
 
+app.use((req,res,next)=>{
+    res.setHeader('Access-Control-Allow-Origin','*');
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+})
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/admin', adminRouter);
+app.use('/users', isAuth, usersRouter);
+app.use('/admin', isAuth, adminRouter);
 app.use('/auth', authRouter);
 
 
@@ -55,9 +61,9 @@ app.use((err, req, res, next)=>{
   res.status(err.status || 500).json({message:err.message, error: error});
 
 });
-let mongoDBConnection = e_p('db','mongo_db_connection',{isPromise: true})
-    .then(connectionString=>{
-        mongoose.connect(connectionString,{ useNewUrlParser: true,  useUnifiedTopology: true  })
+let mongoDBConnection = e_p({isPromise: true})
+    .then(configObject=>{
+        mongoose.connect(configObject.db.mongo_db_connection,{ useNewUrlParser: true,  useUnifiedTopology: true  })
             .then(()=>console.log('MongoDB connected!'))
             .catch(err=>{
                 let error= new Error(err);

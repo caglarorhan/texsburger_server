@@ -6,7 +6,8 @@ console.log(`You are running on ${env} mode!`);
 const configObject = {
     development:{
         app: {
-            port: parseInt(process.env.DEVELOPMENT_APP_PORT) || 3000
+            port: parseInt(process.env.DEVELOPMENT_APP_PORT) || 3000,
+            jwt_key:process.env.DEVELOPMENT_JWT_SECRETKEY || ''
         },
         db: {
             mongo_db_connection: process.env.DEVELOPMENT_MONGODB_CONNECTION || ''
@@ -17,7 +18,8 @@ const configObject = {
     },
     test:{
         app: {
-            port: parseInt(process.env.TEST_APP_PORT) || 3000
+            port: parseInt(process.env.TEST_APP_PORT) || 3000,
+            jwt_key:process.env.TEST_JWT_SECRETKEY || ''
         },
         db: {
             mongo_db_connection: process.env.TEST_MONGODB_CONNECTION || ''
@@ -28,7 +30,8 @@ const configObject = {
     },
     production: {
         app: {
-            port: parseInt(process.env.PRODUCTION_APP_PORT) || 3000
+            port: parseInt(process.env.PRODUCTION_APP_PORT) || 3000,
+            jwt_key:process.env.PRODUCTION_JWT_SECRETKEY || ''
         },
         db: {
             mongo_db_connection: process.env.PRODUCTION_MONGODB_CONNECTION || ''
@@ -40,12 +43,12 @@ const configObject = {
 
 }
 
-const envValues =(variable_group,variable, options={isPromise:false})=>{
+const envValues =(options={isPromise:false})=>{
     //console.log(configObject[env][variable_group],)
     if(options.isPromise){
         return new Promise((res,rej)=>{
-                if(configObject[env][variable_group][variable]){
-                    res(configObject[env][variable_group][variable]);
+                if(configObject[env]){
+                    res(configObject[env]);
                 }else{
                     rej('Configuration data is not exist!')
                 }
@@ -53,7 +56,7 @@ const envValues =(variable_group,variable, options={isPromise:false})=>{
             }
         );
     }else{
-        return configObject[env][variable_group][variable]
+        return configObject[env]
     }
 
 

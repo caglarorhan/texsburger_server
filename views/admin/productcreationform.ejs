@@ -34,7 +34,10 @@
          let formData = new FormData(productCreationForm);
         let createProductRequest = await fetch(productCreationForm.action,{
             method:'POST',
-            body:formData
+            body:formData,
+            headers:{
+                Authorization:'Bearer '+ localStorage.getItem('token')
+            }
         })
             .then(res=>{
             return res.json()

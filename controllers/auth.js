@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const e_p = require('../config')
 
 
 exports.getSignUpForm = (req,res,next)=>{
@@ -31,10 +32,15 @@ exports.postSignInForm = (req,res,next)=>{
                 error.statusCode = 401;
                 throw error;
             }
-            const token = jwt.sign({
+            const token = jwt.sign(
+                {
                 email: targetUser.email,
                 userId: targetUser._id.toString()
-            },'');
+                },
+                e_p('app','jwt_key'),
+                {expiresIn: '1h'}
+                );
+            res.status(200).json({token:token, userId: targetUser._id.toString()});
         })
         .catch(err=>{
             if(!err.statusCode){

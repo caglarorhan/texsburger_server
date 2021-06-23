@@ -4,7 +4,7 @@ const app = require('../app');
 const debug = require('debug')('texsburger-server:server');
 const http = require('http');
 const e_p = require('../config');
-const port = normalizePort(e_p('app','port'));
+const port = normalizePort(e_p().app.port);
 app.set('port', port);
 
 /** * Create HTTP server. */

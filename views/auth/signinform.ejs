@@ -14,7 +14,7 @@
       method="post"
       id="signInForm"
       style="margin:auto;width:400px;display:flex;flex-direction: column;flex-wrap: wrap">
-    <div>First Name: <input type="email" name="email" id="email"></div>
+    <div>Email: <input type="email" name="email" id="email"></div>
     <div>Password: <input type="password" name="password" id="password"></div>
     <button type="submit">Sign In</button>
 </form>
@@ -25,17 +25,24 @@
         let formData = new FormData(signInForm).entries();
         const signInRequest = await fetch(signInForm.action,{
             method:'POST',
-            body: new URLSearchParams([...formData]),
-            header:{
+            body: JSON.stringify({email:'caglaror@gmail.com', password:'123456'}),
+            headers:{
                 'Accept':'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization' : localStorage.getItem('token')
             }
+//new URLSearchParams([...formData])
         })
         .then(res=>{
             return res.json();
         })
-        .then(res=>{
-            console.log(res);
+        .then(resData=>{
+            localStorage.setItem('token', resData.token);
+            localStorage.setItem('userId', resData.userId);
+            const expDate= new Date(new Date().getTime() + (60*60*1000));
+            localStorage.setItem('expDate',expDate.toISOString());
+            signInForm.reset();
+            window.location.href = "/";
         })
         .catch(err=>{
             console.log(`Error is:${err}`);
