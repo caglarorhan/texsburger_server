@@ -3,10 +3,8 @@
 const app = require('../app');
 const debug = require('debug')('texsburger-server:server');
 const http = require('http');
-/** * Get port from environment and store in Express. */
-console.log(process.env.PORT)
-console.log(process.env.TEST)
-const port = normalizePort(process.env.PORT || '3000');
+const e_p = require('../config');
+const port = normalizePort(e_p('app','port'));
 app.set('port', port);
 
 /** * Create HTTP server. */

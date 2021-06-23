@@ -25,6 +25,7 @@
     <div>Product image: <input type="file" name="productImage"  id="productImage" ></div>
     <div>Product description: <input type="textarea" name="productDescription" ></div>
     <div><button type="submit" style="width:250px">CREATE Product</button></div>
+    <div id="message"></div>
 </form>
 <script>
    document.querySelector('#productCreationForm').addEventListener('submit', async (event)=>{
@@ -35,10 +36,17 @@
             method:'POST',
             body:formData
         })
-        .then(result=>{
-            console.log(result)
+            .then(res=>{
+            return res.json()
         })
-        .catch(err=>{
+            .then(res=>{
+                document.getElementById('message').innerHTML = res.message;
+                setTimeout(()=>{
+                    document.getElementById('message').innerHTML ='';
+                },3000)
+                productCreationForm.reset();
+            })
+            .catch(err=>{
             console.log(err)
         })
     })

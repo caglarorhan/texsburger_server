@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const errorController = require('./controllers/error');
-const e_p = require('./util/envValues');
+const e_p = require('./config');
 
 
 const indexRouter = require('./routes/index');
@@ -28,8 +28,12 @@ app.use(express.urlencoded({
                             )
 );
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'uploads')));
+
+e_p('fs', 'static_folders').split(',').forEach(folderName => {
+    app.use(express.static(path.join(__dirname, folderName)));
+})
+//app.use(express.static(path.join(__dirname, 'public')));
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -51,12 +55,18 @@ app.use((err, req, res, next)=>{
   res.status(err.status || 500).json({message:err.message, error: error});
 
 });
-
-mongoose.connect(e_p('MONGODB_CONNECTION'),{ useNewUrlParser: true,  useUnifiedTopology: true  })
-    .then(()=>console.log('MongoDB connected!'))
-    .catch(err=>{
-        let error= new Error(err);
-        err.status = 500;
+let mongoDBConnection = e_p('db','mongo_db_connection',{isPromise: true})
+    .then(connectionString=>{
+        mongoose.connect(connectionString,{ useNewUrlParser: true,  useUnifiedTopology: true  })
+            .then(()=>console.log('MongoDB connected!'))
+            .catch(err=>{
+                let error= new Error(err);
+                err.status = 500;
+            })
     })
+    .catch(err=>{
+        console.log(err)
+    })
+
 
 module.exports = app;
