@@ -11,7 +11,6 @@ module.exports = (req, res, next)=>{
     }
     const token = authHeader.split(' ')[1];
     try{
-
         decodedToken = jwt.verify(token, e_p().app.jwt_key);
     }catch(err){
         err.statusCode = 500;

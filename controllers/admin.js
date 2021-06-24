@@ -3,7 +3,7 @@ const Product = require('../models/product');
 exports.getAdminDashPage = (req, res, next) => {
     res.render('admin/dashpage', {
         pageTitle: 'Admin Dash Page',
-        path: '/admin/dashpage',
+        pagePath: '/admin/dashpage',
         editing: false
     });
 };
@@ -11,7 +11,7 @@ exports.getAdminDashPage = (req, res, next) => {
 exports.getProductCreationForm = (req, res, next) => {
     res.render('admin/productCreationForm', {
         pageTitle: 'Create Product Form',
-        path: '/admin/productcreationform',
+        pagePath: '/admin/productcreationform',
         editing: false
     });
 

@@ -1,7 +1,10 @@
 <link rel="stylesheet" href="/stylesheets/navmenu.css">
 
 <div class="topnav" id="myTopnav">
-    <a href="/admin" class="active">Admin Pages</a>
-    <a href="/auth/signup">Sign Up</a>
-    <a href="/auth/signin">Sign In</a>
+    <a href="/" class="<%= pagePath==="/"? "active": "" %>">Home Pages</a>
+    <a href="/admin" class="<%= pagePath==="/admin"? "active": "" %>">Admin Pages</a>
+    <a href="/products" class="<%= pagePath==="/products"? "active": "" %>">Products</a>
+    <a href="/auth/signup" class="<%= pagePath==="/auth/signup"? "active": "" %>">Sign Up</a>
+    <a href="/auth/signin" class="<%= pagePath==="/auth/signin"? "active": "" %>">Sign In</a>
 </div>
+

@@ -12,6 +12,7 @@ const isAuth = require('./middlewares/is-auth');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const adminRouter = require('./routes/admin');
+const productsRouter = require('./routes/products');
 const authRouter = require('./routes/auth');
 const app = express();
 
@@ -42,8 +43,10 @@ app.use((req,res,next)=>{
 })
 
 app.use('/', indexRouter);
-app.use('/users', isAuth, usersRouter);
-app.use('/admin', isAuth, adminRouter);
+app.use('/users', usersRouter);
+app.use('/admin', adminRouter);
+//app.use('/products', isAuth, adminRouter);
+app.use('/products', productsRouter);
 app.use('/auth', authRouter);
 
 

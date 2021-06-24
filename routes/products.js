@@ -1,13 +1,13 @@
 const express = require('express');
+const productsController = require('../controllers/products');
+const isAuth = require('../middlewares/is-auth');
 const router = express.Router();
 
-/* GET products listing. */
-router.get('/', function(req, res, next) {
-    res.send('product list here.');
+
+router.get('/', (req,res,next)=>{
+    res.render('product/products',{pagePath:'/products'})
 });
-
-router.get('/',(req,res,next)=>{
-
-})
+router.get('/page/:pageNumber', productsController.getProductsList);
+router.get('/product/:pid',productsController.getProductDetails)
 
 module.exports = router;

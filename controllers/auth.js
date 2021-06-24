@@ -12,7 +12,7 @@ exports.getSignUpForm = (req,res,next)=>{
 }
 
 exports.postSignInForm = (req,res,next)=>{
-    console.log(req.body);
+    //console.log(req.body);
     const email = req.body.email;
     const password = req.body.password;
     let targetUser;
@@ -24,10 +24,12 @@ exports.postSignInForm = (req,res,next)=>{
                 throw error;
             }
             targetUser = user;
+            //console.log(targetUser);
             return bcrypt.compare(password, user.password);
         })
         .then(isEqual =>{
             if(!isEqual){
+                //console.log('password is not equal!')
                 const error = new Error('Wrong password!');
                 error.statusCode = 401;
                 throw error;
@@ -37,15 +39,18 @@ exports.postSignInForm = (req,res,next)=>{
                 email: targetUser.email,
                 userId: targetUser._id.toString()
                 },
-                e_p('app','jwt_key'),
+                e_p('app','jwt_key').app.jwt_key,
                 {expiresIn: '1h'}
                 );
+            //console.log('everythings ok, sending response!')
             res.status(200).json({token:token, userId: targetUser._id.toString()});
         })
         .catch(err=>{
+            //console.log(err);
             if(!err.statusCode){
                 err.statusCode = 500
             }
+            next(err)
         })
 
 }
