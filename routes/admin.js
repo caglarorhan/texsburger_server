@@ -6,6 +6,8 @@ const uploader = require('../middlewares/uploader');
 
 router.get('/', adminControllers.getAdminDashPage);
 router.get('/productCreationForm', adminControllers.getProductCreationForm);
+router.get('/products', adminControllers.getProducts);
+router.delete('/product/:pid', isAuth, adminControllers.deleteProduct);
 router.post('/productCreate', uploader.single('productImage'), adminControllers.postProductCreate);
 //router.post('/productCreate', uploader.array('uploadedImages',10), adminControllers.postProductCreate);
 

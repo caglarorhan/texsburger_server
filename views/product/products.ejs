@@ -14,6 +14,7 @@
             justify-content: flex-start;
             align-content: flex-start;
             align-items: flex-start;
+
         }
 
         .flex-item {
@@ -26,6 +27,15 @@
             border:1px solid;
             border-radius: 5px;
             text-align:center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .flex-item .upper{
+            display:flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .pagination{
@@ -42,23 +52,32 @@
             padding: 8px 16px;
             text-decoration: none;
             border-radius: 5px;
-            transition: background-color .3s;
+            cursor:pointer;
         }
-
+        .pagination button.active {
+            color:white;
+            background-color: #333333;
+        }
+        .operationButtonsContainer{
+            height:20px;
+            text-align: center;
+            margin-bottom:5px;
+        }
     </style>
 </head>
 <body>
 <%- include('../navmenu.ejs',{pagePath:pagePath}) %>
 <div id="productList" class="flex-container">
-Product list is loading...
+    Product list is loading...
 
 </div>
 <section class="pagination">
     loading...
 </section>
 <script>
-    const productListRequest = async (pageNumber=0)=>{
-        console.log('fetching data...')
+    const texsBurger ={};
+    texsBurger.productListRequest = async (pageNumber)=>{
+        pageNumber = Number(pageNumber) || 1;
         const productListRequest = await fetch('/products/page/'+pageNumber,{
             method:'GET',
             headers:{
@@ -67,33 +86,44 @@ Product list is loading...
             }
         })
             .then(result=>{
-            return result.json()
-        })
+                return result.json()
+            })
             .then(resData=>{
                 document.getElementById('productList').innerHTML='';
                 resData.products.forEach(oProduct=>{
                     document.getElementById('productList').innerHTML+=`
 <div class="flex-item">
+<div class="upper">
 ${oProduct.productName}
 <img src="${oProduct.productImage.replace('public','')}" alt="" style="max-height: 150px; max-width: 150px;">
 </div>
+<div class="operationButtonsContainer">
+<button>TEST</button>
+</div>
+</div>
 `;
                 })
-let totalProductCount = resData.totalProductCount;
-let itemsPerPage = resData.itemsPerPage;
-let calculatedPageCount = Math.floor(totalProductCount/itemsPerPage);
-    document.querySelector('.pagination').innerHTML='';
-for(let pageNo=1; pageNo<=calculatedPageCount; pageNo++){
-    document.querySelector('.pagination').innerHTML+=`<button type="button" onclick="productListRequest(${pageNo})">${pageNo}</button>`
-}
+                let totalProductCount = resData.totalProductCount;
+                let itemsPerPage = resData.itemsPerPage;
+                let currentPage = resData.currentPage;
+                let calculatedPageCount = resData.maxPageNumber
+                let pageNo;
+                document.querySelector('.pagination').innerHTML='';
+                for(pageNo=1; pageNo<=calculatedPageCount; pageNo++){
+                    let buttonClass='';
+                    if(parseInt(currentPage)===pageNo){
+                        buttonClass='class="active"'
+                    }
+                    document.querySelector('.pagination').innerHTML+=`<button type="button" ${buttonClass} onclick="texsBurger.productListRequest(${pageNo})">${pageNo}</button>`
+                }
 
             })
             .catch(err=>{
-            console.log(err)
-        })
+                console.log(err)
+            })
     }
 
-    window.addEventListener('load',productListRequest);
+    window.addEventListener('load', texsBurger.productListRequest);
 </script>
 </body>
 </html>

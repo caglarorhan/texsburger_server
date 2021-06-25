@@ -7,7 +7,8 @@ const configObject = {
     development:{
         app: {
             port: parseInt(process.env.DEVELOPMENT_APP_PORT) || 3000,
-            jwt_key:process.env.DEVELOPMENT_JWT_SECRETKEY || ''
+            jwt_key:process.env.DEVELOPMENT_JWT_SECRETKEY || '',
+            image_storage:process.env.DEVELOPMENT_IMAGE_STORAGE
         },
         db: {
             mongo_db_connection: process.env.DEVELOPMENT_MONGODB_CONNECTION || ''
@@ -19,7 +20,8 @@ const configObject = {
     test:{
         app: {
             port: parseInt(process.env.TEST_APP_PORT) || 3000,
-            jwt_key:process.env.TEST_JWT_SECRETKEY || ''
+            jwt_key:process.env.TEST_JWT_SECRETKEY || '',
+            image_storage:process.env.TEST_IMAGE_STORAGE
         },
         db: {
             mongo_db_connection: process.env.TEST_MONGODB_CONNECTION || ''
@@ -31,7 +33,8 @@ const configObject = {
     production: {
         app: {
             port: parseInt(process.env.PRODUCTION_APP_PORT) || 3000,
-            jwt_key:process.env.PRODUCTION_JWT_SECRETKEY || ''
+            jwt_key:process.env.PRODUCTION_JWT_SECRETKEY || '',
+            image_storage:process.env.PRODUCTION_IMAGE_STORAGE
         },
         db: {
             mongo_db_connection: process.env.PRODUCTION_MONGODB_CONNECTION || ''

@@ -1,4 +1,7 @@
 const Product = require('../models/product');
+const e_p = require('../config');
+const fs = require('fs');
+const path = require('path');
 
 exports.getAdminDashPage = (req, res, next) => {
     res.render('admin/dashpage', {
@@ -14,7 +17,6 @@ exports.getProductCreationForm = (req, res, next) => {
         pagePath: '/admin/productcreationform',
         editing: false
     });
-
 };
 exports.postProductCreate = (req, res, next) => {
     const product = new Product({
@@ -22,14 +24,50 @@ exports.postProductCreate = (req, res, next) => {
             productPrice:req.body.productPrice,
             productDescription:req.body.productDescription,
             productImage: req.file.path,
-            creator:{name: 'Caglaror'}
+            creator:{name: ''}
     })
         product.save()
             .then(result=>{
                 res.status(201).json({
-                    message:'Product created succesfully.',
+                    message:'Product created successfully.',
                     product: result
                 })
             })
             .catch(err=>{console.log(err)})
 };
+
+exports.getProducts = (req,res,next)=>{
+    res.render('admin/products',{
+        pageTitle: 'Admin Product Operations',
+        pagePath: '/admin/dashpage',
+        editing: true
+    })
+}
+exports.deleteProduct = (req,res,next)=>{
+    let pId = req.params.pid;
+console.log(pId, 'will be deleted!')
+    Product.findById(pId)
+        .then(product=>{
+            if(!product){
+                const error = new Error('Product couldnt find!');
+                error.statusCode = 404;
+                throw error;
+            }
+            // product found
+            //TODO delete image
+            let filePath = path.join(__dirname,'../',product.productImage);
+            console.log(filePath);
+            fs.unlinkSync(filePath);
+            //TODO delete product data
+            return Product.findByIdAndDelete(pId);
+        })
+        .then(product=>{
+            res.status(200).json({message:'Product deleted!', product: product})
+        })
+        .catch(err=>{
+            if(!err.statusCode){
+                err.statusCode=500;
+            }
+            next(err);
+        })
+}
