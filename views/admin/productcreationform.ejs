@@ -2,7 +2,6 @@
 <html>
 <head>
     <title><%= pageTitle %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
     <style>
 #productCreationForm div{
     padding:10px
@@ -24,10 +23,20 @@
     <div>Product price: <input type='number' name="productPrice" step='0.01' value='0.00' placeholder='0.00'></div>
     <div>Product image: <input type="file" name="productImage"  id="productImage" ></div>
     <div>Product description: <input type="textarea" name="productDescription" ></div>
+    <div><img id="newImage" src="" alt="" style="width: 250px;"></div>
     <div><button type="submit" style="width:250px">CREATE Product</button></div>
     <div id="message"></div>
 </form>
 <script>
+    //
+    document.getElementById('productImage').addEventListener('change',function(){
+        let reader = new FileReader();
+        reader.addEventListener('load',(e)=>{
+            document.getElementById('newImage').setAttribute('src',e.target.result)
+        });
+        reader.readAsDataURL(this.files[0]);
+    })
+    //
    document.querySelector('#productCreationForm').addEventListener('submit', async (event)=>{
         event.preventDefault();
         let productCreationForm = document.getElementById('productCreationForm');

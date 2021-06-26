@@ -36,6 +36,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            cursor:pointer;
         }
 
         .pagination{
@@ -59,14 +60,38 @@
             background-color: #333333;
         }
         .operationButtonsContainer{
+            display:flex;
+            flex-direction: row;
+            justify-content: center;
             height:20px;
             text-align: center;
             margin-bottom:5px;
         }
     </style>
+    <link rel="stylesheet" href="/stylesheets/modal.css">
+    <style>
+        #productDetails{
+            display:flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            justify-items: flex-start;
+        }
+    </style>
 </head>
 <body>
 <%- include('../navmenu.ejs',{pagePath:pagePath}) %>
+<div id="myModal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Product Details</h3>
+        <div id="productDetails">...</div>
+    </div>
+    <!-- /Modal Content -->
+
+</div>
 <div id="productList" class="flex-container">
     Product list is loading...
 
@@ -92,17 +117,50 @@
                 document.getElementById('productList').innerHTML='';
                 resData.products.forEach(oProduct=>{
                     document.getElementById('productList').innerHTML+=`
-<div class="flex-item">
+<div class="flex-item" data-pid="${oProduct._id}">
 <div class="upper">
 ${oProduct.productName}
 <img src="${oProduct.productImage.replace('public','')}" alt="" style="max-height: 150px; max-width: 150px;">
 </div>
 <div class="operationButtonsContainer">
-<button>TEST</button>
+<button data-act="decreaseAmount">-</button>
+<input type="number" name="orderAmount" step="1" value="0" min="0" max="99" size="2" style="text-align:right; width: 50px; max-width: 50px;">
+<button data-act="increaseAmount">+</button>
 </div>
 </div>
 `;
                 })
+                document.querySelectorAll('.flex-item').forEach(prod=>{
+
+                    prod.querySelector('.upper').addEventListener('click',()=>{
+                        const modal = document.getElementById("myModal");
+                        const closeSpan = document.getElementsByClassName("close")[0];
+                        let pid = prod.dataset.pid;
+
+                        texsBurger.showProductDetails(pid);
+                        modal.style.display = "block";
+                        closeSpan.addEventListener('click',()=>{
+                            modal.style.display = "none";
+                        })
+                    })
+                    prod.querySelectorAll("button").forEach(btn=>{
+                        //console.log(btn)
+                        btn.addEventListener('click',()=>{
+                            let prodCount = prod.querySelector("[name='orderAmount']");
+                            switch(btn.dataset.act){
+                                case "decreaseAmount":
+                                    prodCount.value>0?prodCount.value--:0;
+                                    break;
+                                case "increaseAmount":
+                                    prodCount.value++;
+                                    break;
+                            }
+                        })
+
+                    })
+                })
+
+                //
                 let totalProductCount = resData.totalProductCount;
                 let itemsPerPage = resData.itemsPerPage;
                 let currentPage = resData.currentPage;
@@ -122,8 +180,31 @@ ${oProduct.productName}
                 console.log(err)
             })
     }
+    texsBurger.showProductDetails = (pid)=>{
+        document.getElementById('productDetails').innerHTML='';
+        let productDetailRequest = fetch('/products/product/'+pid,{
+            method:'GET',
+            headers:{}
+        })
+            .then(result=>{return result.json()})
+            .then(resData=>{
+                let oProduct = resData.product;
+                document.getElementById('productDetails').innerHTML+=`<div><h2>${oProduct.productName}</h2></div>`;
+                document.getElementById('productDetails').innerHTML+=`<img src="${oProduct.productImage.replace('public','')}" alt="" style="max-height: 350px; max-width: 350px;">`;
+                document.getElementById('productDetails').innerHTML+=`<div style="width:100%; text-align: left"><b>Price:</b>${oProduct.productPrice}</div>`;
+                document.getElementById('productDetails').innerHTML+=`<div style="width:100%; text-align: left"><b>Description:</b>${oProduct.productDescription}</div>`;
+            })
+            .catch(err=>{
+                console.log(err);
+            })
+    }
 
     window.addEventListener('load', texsBurger.productListRequest);
+    window.addEventListener('click',(event)=>{
+        if (event.target.id === 'myModal') {
+            document.getElementById("myModal").style.display = "none";
+        }
+    });
 </script>
 </body>
 </html>

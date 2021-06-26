@@ -70,49 +70,7 @@
             background-color: #333333;
         }
     </style>
-    <style>
-        body {font-family: Arial, Helvetica, sans-serif;}
-
-        /* The Modal (background) */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            padding-top: 100px; /* Location of the box */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-        }
-
-        /* Modal Content */
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 500px;
-            height: 500px;
-        }
-
-        /* The Close Button */
-        .close {
-            color: #aaaaaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: #000;
-            text-decoration: none;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="/stylesheets/modal.css">
 
 </head>
 <body>
@@ -123,7 +81,7 @@
     <div class="modal-content">
         <span class="close">&times;</span>
         <h3>Product Edit/Update</h3>
-        <form action="productUpdate"
+        <form action="/admin/productUpdate"
               id="productUpdateForm"
               name="productUpdateForm"
               method="post"
@@ -134,10 +92,13 @@
             <div>Product price: <input type='number' name="productPrice" step='0.01' value='0.00' placeholder='0.00'></div>
             <div>Product image: <input type="file" name="productImage"  id="productImage" ></div>
             <div>Product description: <input type="textarea" name="productDescription" ></div>
-            <div><button type="submit" style="width:250px">Update Product</button></div>
-            <div id="message"></div>
+            <input type="hidden" name="productId" >
+            <div id="productImageDisplay"></div>
+            <div><button type="submit" name="updateFormSubmit" style="width:250px" disabled="disabled">Update Product</button></div>
+            <div id="message" style="color:red"></div>
         </form>
     </div>
+    <!-- /Modal Content -->
 
 </div>
 <div id="productList" class="flex-container">
@@ -199,7 +160,7 @@ ${oProduct.productName}
                             switch(btn.dataset.act){
                                 case 'edit':
                                     btn.addEventListener('click',()=>{
-                                        texsBurger.editProduct(pId);
+                                        texsBurger.editProductForm(pId);
                                     });
                                     break;
                                 case 'delete':
@@ -223,16 +184,6 @@ ${oProduct.productName}
         }
     });
 
-    texsBurger.editProduct= (pid)=>{
-        const modal = document.getElementById("myModal");
-        const closeSpan = document.getElementsByClassName("close")[0];
-        console.log(`${pid} product will be edited.`)
-        modal.style.display = "block";
-        closeSpan.addEventListener('click',(pid)=>{
-            modal.style.display = "none";
-            texsBurger.editProductForm(pid);
-        })
-    }
 
     texsBurger.deleteProduct= (pid)=>{
         console.log(`${pid} product will be deleted.`);
@@ -264,31 +215,83 @@ ${oProduct.productName}
         },1000)
     }
 
-    //---------
-    texsBurger.editProductForm = (pid)=>{
-        //product data
+    texsBurger.editProductForm= (pid)=>{
+        const modal = document.getElementById("myModal");
+        const closeSpan = document.getElementsByClassName("close")[0];
+        console.log(`${pid} product will be edited.`);
+        document.getElementById('productUpdateForm').reset();
+        let requestProductDetail = fetch('../products/product/'+pid,{
+            method:'GET',
+            headers:{
+                Accept:'application/json, text/plain, */*',
+                Authorization:'Bearer '+ localStorage.getItem('token')
+            }
 
+        })
+            .then(result=>{
+                if(result.status!==200){
+                    throw new Error('Product couldn\'t be found!');
+                }
+                return result.json();
+            })
+            .then(resData=>{
+                const oProduct = resData.product;
+                const productUpdateForm = document.getElementById('productUpdateForm');
+                productUpdateForm['productName'].value = oProduct.productName;
+                productUpdateForm['productPrice'].value = oProduct.productPrice;
+                productUpdateForm['productDescription'].value = oProduct.productDescription;
+                productUpdateForm['productId'].value = oProduct._id;
+                document.getElementById('productImageDisplay').innerHTML=`<img id="newImage" src="${oProduct.productImage.replace('public','')}" alt="${oProduct.productName}" style="width: 250px; max-width: 250px; height: 250px;">`;
+                productUpdateForm['updateFormSubmit'].disabled=false;
+                //add submit listener
+                texsBurger.editProductListener(oProduct._id);
+                //imageListener
+                productUpdateForm['productImage'].addEventListener('change',function(){
+                    let reader = new FileReader();
+                    reader.addEventListener('load',(e)=>{
+                        document.getElementById('newImage').setAttribute('src',e.target.result)
+                    });
+                    reader.readAsDataURL(this.files[0]);
+                })
+
+
+            })
+            .catch(err=>{
+                console.log(err);
+            })
+        modal.style.display = "block";
+        closeSpan.addEventListener('click',()=>{
+            modal.style.display = "none";
+        })
+    }
+    //---------
+    texsBurger.editProductListener = (pid)=>{
         //form submit processes
         document.querySelector('#productUpdateForm').addEventListener('submit', async (event)=>{
             event.preventDefault();
             let productUpdateForm = document.getElementById('productUpdateForm');
             let formData = new FormData(productUpdateForm);
             let updateProductRequest = await fetch(productUpdateForm.action,{
-                method:'POST',
+                method:'PUT',
                 body:formData,
                 headers:{
                     Authorization:'Bearer '+ localStorage.getItem('token')
                 }
             })
                 .then(res=>{
+                    if(res.status!==200){
+                        throw new Error('Couldnt updated!');
+                    }
                     return res.json()
                 })
                 .then(res=>{
                     document.getElementById('message').innerHTML = res.message;
                     setTimeout(()=>{
                         document.getElementById('message').innerHTML ='';
-                    },3000)
-                    productUpdateForm.reset();
+                        document.getElementById("myModal").style.display="";
+                        productUpdateForm.reset();
+                    },3000);
+
                 })
                 .catch(err=>{
                     console.log(err)

@@ -54,11 +54,11 @@ console.log(pId, 'will be deleted!')
                 throw error;
             }
             // product found
-            //TODO delete image
+            //delete image
             let filePath = path.join(__dirname,'../',product.productImage);
             console.log(filePath);
             fs.unlinkSync(filePath);
-            //TODO delete product data
+            //delete product data
             return Product.findByIdAndDelete(pId);
         })
         .then(product=>{
@@ -69,5 +69,34 @@ console.log(pId, 'will be deleted!')
                 err.statusCode=500;
             }
             next(err);
+        })
+}
+
+exports.putProductUpdate =(req,res,next)=>{
+
+    Product.findById(req.body.productId)
+        .then(product=>{
+            if(!product){
+                const error = new Error('Couldnt find a product!');
+                error.statusCode=404;
+                throw error;
+            }
+            product.productName = req.body.productName;
+            product.productDescription = req.body.productDescription;
+            if(req.file){
+                product.productImage = req.file.path;
+            }
+            product.productPrice=req.body.productPrice,
+            product.creator = {name:''}
+            return product.save();
+        })
+        .then(result=>{
+            res.status(200).json({
+                message:'Product updated successfully.',
+                product: result
+            })
+        })
+        .catch(err=>{
+            next(err)
         })
 }

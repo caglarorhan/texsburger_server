@@ -41,10 +41,6 @@ console.log(pageNumber);
         })
 }
 
-
-
-
-
 exports.getProductDetails = (req,res,next)=>{
     console.log(req.params.pid);
     let targetProductId = req.params.pid;
