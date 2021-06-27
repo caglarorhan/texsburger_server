@@ -6,6 +6,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Products</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
     <style>
         .flex-container {
             display: flex;
@@ -78,6 +79,7 @@
             justify-items: flex-start;
         }
     </style>
+    <script src="/javascripts/shoppingcart.js"></script>
 </head>
 <body>
 <%- include('../navmenu.ejs',{pagePath:pagePath}) %>
@@ -100,7 +102,7 @@
     loading...
 </section>
 <script>
-    const texsBurger ={};
+    let texsBurger ={};
     texsBurger.productListRequest = async (pageNumber)=>{
         pageNumber = Number(pageNumber) || 1;
         const productListRequest = await fetch('/products/page/'+pageNumber,{
@@ -119,9 +121,10 @@
                     document.getElementById('productList').innerHTML+=`
 <div class="flex-item" data-pid="${oProduct._id}">
 <div class="upper">
-${oProduct.productName}
+<div data-pname="${oProduct.productName}">${oProduct.productName}</div>
 <img src="${oProduct.productImage.replace('public','')}" alt="" style="max-height: 150px; max-width: 150px;">
 </div>
+<div>Unit Price: <span data-puprice="${oProduct.productPrice}"></span> </div>
 <div class="operationButtonsContainer">
 <button data-act="decreaseAmount">-</button>
 <input type="number" name="orderAmount" step="1" value="0" min="0" max="99" size="2" style="text-align:right; width: 50px; max-width: 50px;">
@@ -131,11 +134,15 @@ ${oProduct.productName}
 `;
                 })
                 document.querySelectorAll('.flex-item').forEach(prod=>{
+                    let pid = prod.dataset.pid;
+                    let pname = prod.querySelector("[data-pname]").dataset.pname;
+                    let puprice = prod.querySelector("[data-puprice]").dataset.puprice;
+
 
                     prod.querySelector('.upper').addEventListener('click',()=>{
                         const modal = document.getElementById("myModal");
                         const closeSpan = document.getElementsByClassName("close")[0];
-                        let pid = prod.dataset.pid;
+
 
                         texsBurger.showProductDetails(pid);
                         modal.style.display = "block";
@@ -155,6 +162,12 @@ ${oProduct.productName}
                                     prodCount.value++;
                                     break;
                             }
+                            texsBurger.updateShoppingCartWithProducts({
+                                pid:pid,
+                                pCount: prodCount.value,
+                                pName: pname,
+                                pPrice: puprice
+                            });
                         })
 
                     })
@@ -174,7 +187,7 @@ ${oProduct.productName}
                     }
                     document.querySelector('.pagination').innerHTML+=`<button type="button" ${buttonClass} onclick="texsBurger.productListRequest(${pageNo})">${pageNo}</button>`
                 }
-
+                texsBurger.updateProductsWithShoppingCart();
             })
             .catch(err=>{
                 console.log(err)
