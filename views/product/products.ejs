@@ -69,7 +69,7 @@
             margin-bottom:5px;
         }
     </style>
-    <link rel="stylesheet" href="/stylesheets/modal.css">
+
     <style>
         #productDetails{
             display:flex;
@@ -79,21 +79,11 @@
             justify-items: flex-start;
         }
     </style>
-    <script src="/javascripts/shoppingcart.js"></script>
+
 </head>
 <body>
 <%- include('../navmenu.ejs',{pagePath:pagePath}) %>
-<div id="myModal" class="modal">
 
-    <!-- Modal content -->
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h3>Product Details</h3>
-        <div id="productDetails">...</div>
-    </div>
-    <!-- /Modal Content -->
-
-</div>
 <div id="productList" class="flex-container">
     Product list is loading...
 
@@ -124,7 +114,7 @@
 <div data-pname="${oProduct.productName}">${oProduct.productName}</div>
 <img src="${oProduct.productImage.replace('public','')}" alt="" style="max-height: 150px; max-width: 150px;">
 </div>
-<div>Unit Price: <span data-puprice="${oProduct.productPrice}"></span> </div>
+<div>Unit Price: <span data-puprice="${oProduct.productPrice}">${oProduct.productPrice}</span> </div>
 <div class="operationButtonsContainer">
 <button data-act="decreaseAmount">-</button>
 <input type="number" name="orderAmount" step="1" value="0" min="0" max="99" size="2" style="text-align:right; width: 50px; max-width: 50px;">
@@ -140,15 +130,11 @@
 
 
                     prod.querySelector('.upper').addEventListener('click',()=>{
-                        const modal = document.getElementById("myModal");
-                        const closeSpan = document.getElementsByClassName("close")[0];
-
-
-                        texsBurger.showProductDetails(pid);
-                        modal.style.display = "block";
-                        closeSpan.addEventListener('click',()=>{
-                            modal.style.display = "none";
-                        })
+                                modalWindowCreator({id:'productDetailModal'}).destroy();
+                         texsBurger.showProductDetails(pid).then(ingredient=>{
+                            const productDetailModal = modalWindowCreator({id:'productDetailModal', ingredient:ingredient});
+                            productDetailModal.switch('on');
+                        });
                     })
                     prod.querySelectorAll("button").forEach(btn=>{
                         //console.log(btn)
@@ -166,7 +152,7 @@
                                 pid:pid,
                                 pCount: prodCount.value,
                                 pName: pname,
-                                pPrice: puprice
+                                pPrice: parseFloat(puprice)
                             });
                         })
 
@@ -188,24 +174,26 @@
                     document.querySelector('.pagination').innerHTML+=`<button type="button" ${buttonClass} onclick="texsBurger.productListRequest(${pageNo})">${pageNo}</button>`
                 }
                 texsBurger.updateProductsWithShoppingCart();
+                texsBurger.updateVisualShoppingCart();
             })
             .catch(err=>{
                 console.log(err)
             })
     }
     texsBurger.showProductDetails = (pid)=>{
-        document.getElementById('productDetails').innerHTML='';
-        let productDetailRequest = fetch('/products/product/'+pid,{
+        return fetch('/products/product/'+pid,{
             method:'GET',
             headers:{}
         })
             .then(result=>{return result.json()})
             .then(resData=>{
                 let oProduct = resData.product;
-                document.getElementById('productDetails').innerHTML+=`<div><h2>${oProduct.productName}</h2></div>`;
-                document.getElementById('productDetails').innerHTML+=`<img src="${oProduct.productImage.replace('public','')}" alt="" style="max-height: 350px; max-width: 350px;">`;
-                document.getElementById('productDetails').innerHTML+=`<div style="width:100%; text-align: left"><b>Price:</b>${oProduct.productPrice}</div>`;
-                document.getElementById('productDetails').innerHTML+=`<div style="width:100%; text-align: left"><b>Description:</b>${oProduct.productDescription}</div>`;
+                let ingredient='';
+                ingredient+=`<div><h2>${oProduct.productName}</h2></div>`;
+                ingredient+=`<img src="${oProduct.productImage.replace('public','')}" alt="" style="max-height: 350px; max-width: 350px;">`;
+                ingredient+=`<div style="margin-top:auto; width:100%; text-align: left"><b>Price:</b>${oProduct.productPrice}</div>`;
+                ingredient+=`<div style="width:100%; text-align: left"><b>Description:</b>${oProduct.productDescription}</div>`;
+                return ingredient;
             })
             .catch(err=>{
                 console.log(err);

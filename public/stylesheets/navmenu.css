@@ -32,3 +32,16 @@
 .topnav .icon {
     display: none;
 }
+
+
+.topnav #shoppingCart div{
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+    padding: 5px;
+}
+.topnav #shoppingCart div:hover{
+    background-color: #333333;
+    color: white;
+    cursor:pointer;
+}
