@@ -8,7 +8,11 @@ const configObject = {
         app: {
             port: parseInt(process.env.DEVELOPMENT_APP_PORT) || 3000,
             jwt_key:process.env.DEVELOPMENT_JWT_SECRETKEY || '',
-            image_storage:process.env.DEVELOPMENT_IMAGE_STORAGE
+            image_storage:process.env.DEVELOPMENT_IMAGE_STORAGE,
+            stripe_publishable_key: process.env.DEVELOPMENT_STRIPE_API_PUBLISH_KEY,
+            stripe_secret_key: process.env.DEVELOPMENT_STRIPE_API_SECRET_KEY,
+            stripe_webhook_secret_key: process.env.STRIPE_WEBHOOK_SECRET
+
         },
         db: {
             mongo_db_connection: process.env.DEVELOPMENT_MONGODB_CONNECTION || ''
@@ -21,7 +25,10 @@ const configObject = {
         app: {
             port: parseInt(process.env.TEST_APP_PORT) || 3000,
             jwt_key:process.env.TEST_JWT_SECRETKEY || '',
-            image_storage:process.env.TEST_IMAGE_STORAGE
+            image_storage:process.env.TEST_IMAGE_STORAGE,
+            stripe_publishable_key: process.env.TEST_STRIPE_API_PUBLISH_KEY,
+            stripe_secret_key: process.env.TEST_STRIPE_API_SECRET_KEY,
+            stripe_webhook_secret_key: process.env.STRIPE_WEBHOOK_SECRET
         },
         db: {
             mongo_db_connection: process.env.TEST_MONGODB_CONNECTION || ''
@@ -34,7 +41,10 @@ const configObject = {
         app: {
             port: parseInt(process.env.PRODUCTION_APP_PORT) || 3000,
             jwt_key:process.env.PRODUCTION_JWT_SECRETKEY || '',
-            image_storage:process.env.PRODUCTION_IMAGE_STORAGE
+            image_storage:process.env.PRODUCTION_IMAGE_STORAGE,
+            stripe_publishable_key: process.env.PRODUCTION_STRIPE_API_PUBLISH_KEY,
+            stripe_secret_key: process.env.PRODUCTION_STRIPE_API_SECRET_KEY,
+            stripe_webhook_secret_key: process.env.STRIPE_WEBHOOK_SECRET
         },
         db: {
             mongo_db_connection: process.env.PRODUCTION_MONGODB_CONNECTION || ''
@@ -55,14 +65,16 @@ const envValues =(options={isPromise:false})=>{
                 }else{
                     rej('Configuration data is not exist!')
                 }
-
             }
         );
     }else{
         return configObject[env]
     }
-
-
 }
+/*
+Usage in other files
+const e_p = require('config');
+const PK_TEST=  e_p().test.app.stripe_publishable_key
 
+* */
 module.exports=envValues;

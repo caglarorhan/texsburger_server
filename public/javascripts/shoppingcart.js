@@ -144,7 +144,24 @@ window.addEventListener('load',()=>{
         checkoutButton.textContent='CHECKOUT';
         shoppingCartSummaryModalWindow.querySelector('div').append(checkoutButton);
         checkoutButton.addEventListener('click',()=>{
-            //TODO stripe odeme ekrani cagrisi olacak.
+            //--
+            shoppingCartSummaryModalWindow.querySelector('.modal-content').innerHTML=`
+<h3>Please Provide Payment Information</h3>
+                <form id="payment-form" style="display: flex; flex-direction: column; flex-wrap: wrap">
+                    <div id="card-element" style="display: block"><!--Stripe.js injects the Card Element--></div>
+                    <div id="totalAmount" style="display: block; text-align: right">0$</div>
+                        <button id="payment-submit">
+                        <div class="spinner hidden" id="spinner"></div>
+                        <span id="button-text">Pay now</span>
+                        </button>
+                    <p id="card-error" role="alert"></p>
+                    <p class="result-message hidden">
+                    Payment succeeded, see the result in your
+                    <a href="" target="_blank">Stripe dashboard.</a> Refresh the page to pay again.
+                    </p>
+                </form>
+            `;
+goStripeGo(totalCheckoutAmount*100);
         })
         // after ingredient addded
         shoppingCartSummaryModalWindow.switch('on')

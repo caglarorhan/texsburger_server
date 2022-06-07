@@ -6,22 +6,30 @@ const logger = require('morgan');
 const mongoose = require('mongoose');
 const errorController = require('./controllers/error');
 const e_p = require('./config');
-const isAuth = require('./middlewares/is-auth');
+//const isAuth = require('./middlewares/is-auth');
 
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const adminRouter = require('./routes/admin');
 const productsRouter = require('./routes/products');
+const paymentIntentRouter = require('./routes/paymentintents');
+const webhooksRouter = require('./routes/webhooks');
+
 const authRouter = require('./routes/auth');
 const app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
+app.use(express.raw())
 app.use(logger('dev'));
+app.post('/webhooks',function(req,res,next){
+    console.log(req.body);
+})
 app.use(express.json());
+app.use('/webhooks', webhooksRouter);
 app.use(express.urlencoded({
                                     extended: false,
                                     limit: '50mb',
@@ -46,12 +54,15 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);
 //app.use('/products', isAuth, adminRouter);
+app.use('/paymentintents', paymentIntentRouter);
+
 app.use('/products', productsRouter);
 app.use('/auth', authRouter);
 
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
+    console.log('Hata olustu...')
   next(createError(404));
 });
 
