@@ -12,12 +12,19 @@ exports.getAdminDashPage = (req, res, next) => {
 };
 
 exports.getProductCreationForm = (req, res, next) => {
-    res.render('admin/productCreationForm', {
+    res.render('admin/productCreationForm2', {
         pageTitle: 'Create Product Form',
         pagePath: '/admin/productcreationform',
         editing: false
     });
 };
+exports.getProducts = (req,res,next)=>{
+    res.render('admin/products',{
+        pageTitle: 'Admin Product Operations',
+        pagePath: '/admin/dashpage',
+        editing: true
+    })
+}
 exports.postProductCreate = (req, res, next) => {
     const product = new Product({
             productName: req.body.productName,
@@ -36,13 +43,6 @@ exports.postProductCreate = (req, res, next) => {
             .catch(err=>{console.log(err)})
 };
 
-exports.getProducts = (req,res,next)=>{
-    res.render('admin/products',{
-        pageTitle: 'Admin Product Operations',
-        pagePath: '/admin/dashpage',
-        editing: true
-    })
-}
 exports.deleteProduct = (req,res,next)=>{
     let pId = req.params.pid;
 console.log(pId, 'will be deleted!')
