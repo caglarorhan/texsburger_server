@@ -12,7 +12,7 @@ exports.getAdminDashPage = (req, res, next) => {
 };
 
 exports.getProductCreationForm = (req, res, next) => {
-    res.render('admin/productCreationForm2', {
+    res.render('admin/productcreationform', {
         pageTitle: 'Create Product Form',
         pagePath: '/admin/productcreationform',
         editing: false
