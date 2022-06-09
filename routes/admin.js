@@ -9,8 +9,8 @@ router.get('/', adminControllers.getAdminDashPage);
 router.get('/productCreationForm', adminControllers.getProductCreationForm);
 router.get('/products', adminControllers.getProducts);
 router.delete('/product/:pid', adminControllers.deleteProduct);
-router.put('/productUpdate', isAuth, uploader.single('productImage'), adminControllers.putProductUpdate);
-router.post('/productCreate', isAuth, uploader.single('productImage'), adminControllers.postProductCreate);
+router.put('/productUpdate', uploader.single('productImage'), adminControllers.putProductUpdate);
+router.post('/productCreate', uploader.single('productImage'), adminControllers.postProductCreate);
 //router.post('/productCreate', uploader.array('uploadedImages',10), adminControllers.postProductCreate);
 
 module.exports = router;
