@@ -2,7 +2,7 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const e_p = require('../config')
-
+const mongoose = require('mongoose');
 
 exports.getSignUpForm = (req,res,next)=>{
     res.render('auth/signupform',{
@@ -15,6 +15,7 @@ exports.postSignInForm = (req,res,next)=>{
     const email = req.body.email;
     const password = req.body.password;
     let targetUser;
+    res.send(mongoose.connection.readyState)
     User.findOne({email:email})
         .then(user=>{
             res.send(user);
