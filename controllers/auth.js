@@ -12,7 +12,7 @@ exports.getSignUpForm = (req,res,next)=>{
 }
 
 exports.postSignInForm = (req,res,next)=>{
-    console.log(req.body);
+    res.send(req.body);
     const email = req.body.email;
     const password = req.body.password;
     let targetUser;
