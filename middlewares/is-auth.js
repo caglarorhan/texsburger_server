@@ -3,9 +3,9 @@ const e_p = require('../config');
 
 module.exports = (req, res, next)=>{
     let decodedToken;
-    const authHeader = req.get('Authorization');
+    const authHeader = req.headers['Authorization'] || req.get('Authorization');
     if(!authHeader){
-        const error = new Error('Not authenticated!');
+        const error = new Error('Not authenticated-1!');
         error.statusCode =401;
         throw error;
     }
@@ -17,7 +17,7 @@ module.exports = (req, res, next)=>{
         throw err;
     }
     if(!decodedToken){
-        const error = new Error('Not authenticated!');
+        const error = new Error('Not authenticated-2!');
         error.statusCode = 401;
         throw error;
     }
