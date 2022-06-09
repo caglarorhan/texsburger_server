@@ -12,12 +12,12 @@ exports.getSignUpForm = (req,res,next)=>{
 }
 
 exports.postSignInForm = (req,res,next)=>{
-    res.send(req.body);
     const email = req.body.email;
     const password = req.body.password;
     let targetUser;
     User.findOne({email:email})
         .then(user=>{
+            res.send(user);
             if(!user){
                 const error = new Error('A user with this email could not be found.');
                 error.statusCode = 401;
