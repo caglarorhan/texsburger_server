@@ -15,7 +15,7 @@ exports.postSignInForm = (req,res,next)=>{
     const email = req.body.email;
     const password = req.body.password;
     let targetUser;
-    res.send(mongoose.connection.readyState)
+    res.send(200,mongoose.connection.readyState)
     User.findOne({email:email})
         .then(user=>{
             res.send(user);
