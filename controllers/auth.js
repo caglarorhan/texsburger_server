@@ -10,7 +10,18 @@ exports.getSignUpForm = (req,res,next)=>{
         path: '/auth/signup',
     })
 }
-
+let mongoDBConnection = e_p({isPromise: true})
+    .then(configObject=>{
+        mongoose.connect(configObject.db.mongo_db_connection,{ useNewUrlParser: true,  useUnifiedTopology: true  })
+            .then(()=>console.log('MongoDB connected!'))
+            .catch(err=>{
+                let error= new Error(err);
+                err.status = 500;
+            })
+    })
+    .catch(err=>{
+        console.log(err)
+    })
 exports.postSignInForm = (req,res,next)=>{
     const email = req.body.email;
     const password = req.body.password;
